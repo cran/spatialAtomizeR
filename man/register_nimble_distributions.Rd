@@ -7,13 +7,8 @@
 register_nimble_distributions()
 }
 \value{
-Invisible TRUE if successful
+Invisible TRUE
 }
 \description{
-Registers the custom multivariate non-central hypergeometric distribution
-for use in NIMBLE models. This function is called automatically when needed.
-}
-\note{
-The <<- operator is used intentionally to create package-level 
-nimbleFunctions accessible across the package environment.
+Registers the custom distributions for use in NIMBLE models.
 }

@@ -2,8 +2,8 @@ Package: spatialAtomizeR
 Type: Package
 Title: Spatial Analysis with Misaligned Data Using Atom-Based
         Regression Models
-Version: 0.2.3
-Date: 2025-11-28
+Version: 0.2.4
+Date: 2025-12-10
 Authors@R: c(
     person("Yunzhe", "Qian", email = "qyzanemos@gmail.com", role = c("aut", "cre")),
     person("Rachel", "Nethery", email = "rnethery@hsph.harvard.edu", role = "aut"),
@@ -21,16 +21,16 @@ Description: Implements atom-based regression models (ABRM) for analyzing spatia
     Further methodological details and software implementation are described in Qian et al. (in review).
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.0.0), nimble
 Imports: sp, sf, spdep, MASS, raster, dplyr, tidyr, ggplot2, reshape2,
-        nimble, coda, BiasedUrn, stats, utils, grDevices, methods
+        coda, BiasedUrn, stats, utils, grDevices, methods
 Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/bellayqian/spatialAtomizeR
 BugReports: https://github.com/bellayqian/spatialAtomizeR/issues
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-12-04 19:23:15 UTC; anemos
+Packaged: 2025-12-17 19:18:46 UTC; anemos
 Author: Yunzhe Qian [aut, cre],
   Rachel Nethery [aut],
   Nancy Krieger [ctb] (Contributed to the project conceptualization and
@@ -39,4 +39,4 @@ Author: Yunzhe Qian [aut, cre],
     manuscript)
 Maintainer: Yunzhe Qian <qyzanemos@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-12-10 21:10:07 UTC
+Date/Publication: 2025-12-17 19:40:02 UTC
