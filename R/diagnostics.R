@@ -18,7 +18,8 @@ utils::globalVariables(c(
 #' @importFrom coda mcmc mcmc.list gelman.diag effectiveSize
 #' @importFrom stats cor sd median
 #' @importFrom utils head
-#' @export
+#' @keywords internal
+#' @noRd
 check_mcmc_diagnostics <- function(mcmc_output, sim_metadata = NULL) {
   # Validate chain structure
   chains_list <- mcmc_output$samples
@@ -106,7 +107,8 @@ check_mcmc_diagnostics <- function(mcmc_output, sim_metadata = NULL) {
 #' @return List with trace and density plots
 #' @importFrom ggplot2 ggplot aes geom_line geom_density facet_wrap theme_minimal labs theme element_text
 #' @importFrom reshape2 melt
-#' @export
+#' @keywords internal
+#' @noRd
 create_diagnostic_plots <- function(chains_list, sim_metadata) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for plotting but is not installed.")
@@ -128,14 +130,18 @@ create_diagnostic_plots <- function(chains_list, sim_metadata) {
   plot_data <- lapply(seq_along(chains_list), function(chain) {
     data <- as.data.frame(chains_list[[chain]][, params, drop = FALSE])
     data$iteration <- 1:nrow(data)
-    data$chain <- factor(chain)
+    data$chain <- as.factor(chain)
     reshape2::melt(data, id.vars = c("iteration", "chain"))
   })
   
-  plot_data <- do.call(rbind, plot_data)
+  # Combine and ensure it's a proper data frame
+  plot_data <- as.data.frame(do.call(rbind, plot_data))
+  
+  # Ensure variable is a factor
+  plot_data$variable <- as.factor(plot_data$variable)
   
   # Create trace plots - use .data pronoun for NSE variables
-  trace_plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$iteration, y = .data$value, color = .data$chain)) +
+  trace_plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = iteration, y = value, color = chain)) +
     ggplot2::geom_line(alpha = 0.7) +
     ggplot2::facet_wrap(~variable, scales = "free_y") +
     ggplot2::theme_minimal() +
@@ -146,7 +152,7 @@ create_diagnostic_plots <- function(chains_list, sim_metadata) {
                    plot.title = ggplot2::element_text(size = 11))
   
   # Create density plots
-  density_plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$value, fill = .data$chain)) +
+  density_plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = value, fill = chain)) +
     ggplot2::geom_density(alpha = 0.3) +
     ggplot2::facet_wrap(~variable, scales = "free") +
     ggplot2::theme_minimal() +
@@ -163,17 +169,18 @@ create_diagnostic_plots <- function(chains_list, sim_metadata) {
 #'
 #' @param convergence_results Results from check_mcmc_diagnostics
 #' @return No return value, called for side effects. Prints convergence diagnostics including overall convergence status, minimum effective sample size, median ESS, maximum Rhat statistic, and identifies parameters with high relative variance.
-#' @export
+#' @keywords internal
+#' @noRd
 print_convergence_summary <- function(convergence_results) {
-  message("\nConvergence Summary:\n")
+  message("Convergence Summary:\n")
   message("===================\n")
   
   # Overall convergence
-  message(sprintf("\nOverall convergence: %s\n", 
+  message(sprintf("Overall convergence: %s\n", 
               ifelse(convergence_results$overall_converged, "Achieved", "Not achieved")))
   
   # Group convergence
-  message("\nParameter Group Convergence:\n")
+  message("Parameter Group Convergence:\n")
   for(group in names(convergence_results$group_convergence)) {
     message(sprintf("%s parameters: %s\n", 
                 group,
@@ -186,12 +193,12 @@ print_convergence_summary <- function(convergence_results) {
                            !converged)
   
   if(nrow(problem_params) > 0) {
-    message("\nParameters requiring attention:\n")
+    message("Parameters requiring attention:\n")
     print(problem_params[, c("parameter", "rhat", "ess")])
   }
   
   # Print general diagnostics summary
-  message("\nDiagnostic Summary Statistics:\n")
+  message("Diagnostic Summary Statistics:\n")
   diagnostics <- convergence_results$diagnostics
   message(sprintf("Median ESS: %.1f\n", median(diagnostics$ess, na.rm = TRUE)))
   message(sprintf("Max Rhat: %.3f\n", max(diagnostics$rhat, na.rm = TRUE)))
@@ -199,7 +206,7 @@ print_convergence_summary <- function(convergence_results) {
   # Check for any unusually high variances
   high_var_params <- subset(diagnostics, sd/abs(mean) > 0.5)
   if(nrow(high_var_params) > 0) {
-    message("\nParameters with high relative variance:\n")
+    message("Parameters with high relative variance:\n")
     print(high_var_params[, c("parameter", "mean", "sd")])
   }
 }
@@ -213,7 +220,8 @@ print_convergence_summary <- function(convergence_results) {
 #' @importFrom ggplot2 ggplot aes geom_point geom_errorbar geom_bar geom_hline coord_flip theme_minimal labs position_dodge facet_wrap .data
 #' @importFrom dplyr select mutate
 #' @importFrom grDevices pdf dev.off
-#' @export
+#' @keywords internal
+#' @noRd
 create_comparison_plots <- function(comparison_data, output_dir, true_params = NULL) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for plotting but is not installed.")
@@ -298,7 +306,8 @@ create_comparison_plots <- function(comparison_data, output_dir, true_params = N
 #' @importFrom dplyr group_by summarize select
 #' @importFrom tidyr pivot_wider
 #' @importFrom utils write.csv
-#' @export
+#' @keywords internal
+#' @noRd
 create_summary_statistics <- function(all_results, output_dir) {
   # Calculate summary statistics by method
   summary_stats <- all_results %>%
@@ -339,10 +348,10 @@ create_summary_statistics <- function(all_results, output_dir) {
             row.names = FALSE)
   
   # Print summary to console
-  message("\nMethod Comparison Summary:\n")
+  message("Method Comparison Summary:\n")
   print(summary_stats)
   
-  message("\nParameter-Specific Comparison:\n")
+  message("Parameter-Specific Comparison:\n")
   print(param_summary)
   
   return(list(method_summary = summary_stats, param_summary = param_summary))
@@ -356,7 +365,8 @@ create_summary_statistics <- function(all_results, output_dir) {
 #' @importFrom ggplot2 ggplot aes geom_point geom_errorbar geom_bar geom_hline coord_flip facet_grid theme_minimal labs position_dodge
 #' @importFrom grDevices pdf dev.off
 #' @importFrom dplyr group_by summarize
-#' @export
+#' @keywords internal
+#' @noRd
 create_sensitivity_summary_plots <- function(combined_results, output_dir) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for plotting but is not installed.")

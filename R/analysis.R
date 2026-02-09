@@ -83,7 +83,6 @@ run_abrm <- function(gridx,
   )
   
   # Run NIMBLE model
-  message("Running NIMBLE MCMC...\n")
   abrm_results <- run_nimble_model(
     constants = nimble_inputs$constants,
     data = nimble_inputs$data,

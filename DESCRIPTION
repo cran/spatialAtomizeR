@@ -2,8 +2,8 @@ Package: spatialAtomizeR
 Type: Package
 Title: Spatial Analysis with Misaligned Data Using Atom-Based
         Regression Models
-Version: 0.2.4
-Date: 2025-12-10
+Version: 0.2.5
+Date: 2026-02-08
 Authors@R: c(
     person("Yunzhe", "Qian", email = "qyzanemos@gmail.com", role = c("aut", "cre")),
     person("Rachel", "Nethery", email = "rnethery@hsph.harvard.edu", role = "aut"),
@@ -30,7 +30,7 @@ URL: https://github.com/bellayqian/spatialAtomizeR
 BugReports: https://github.com/bellayqian/spatialAtomizeR/issues
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-12-17 19:18:46 UTC; anemos
+Packaged: 2026-02-09 03:27:58 UTC; anemos
 Author: Yunzhe Qian [aut, cre],
   Rachel Nethery [aut],
   Nancy Krieger [ctb] (Contributed to the project conceptualization and
@@ -39,4 +39,4 @@ Author: Yunzhe Qian [aut, cre],
     manuscript)
 Maintainer: Yunzhe Qian <qyzanemos@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-12-17 19:40:02 UTC
+Date/Publication: 2026-02-09 03:50:02 UTC
