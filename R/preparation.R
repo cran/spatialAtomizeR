@@ -181,7 +181,6 @@ prepare_nimble_inputs <- function(bookkeeping, adjacency, data,
     return(covar_matrix)
   }
   
-  message("Creating and standardizing covariate matrices...")
   covar_x <- create_covariate_matrix(grid_data=gridx_xorder[order(gridx_xorder$ID_xorder), ],
                                      vars=bookkeeping$x_vars,
                                      grid_size=nrow(gridx_xorder))
@@ -349,7 +348,6 @@ prepare_nimble_inputs <- function(bookkeeping, adjacency, data,
     message("J_y (atom-equivalent Y grids):", J_y, "\n")
     message("Length of y_to_atom:", length(constants$y_to_atom), "\n")
     message("Length of expand_y:", length(constants$expand_y), "\n")
-    message("Length of pop_atoms:", length(constants$pop_atoms), "\n")
     
     # Check population alignment
     # Check y_to_atom mapping

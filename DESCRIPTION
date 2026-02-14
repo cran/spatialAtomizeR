@@ -2,8 +2,8 @@ Package: spatialAtomizeR
 Type: Package
 Title: Spatial Analysis with Misaligned Data Using Atom-Based
         Regression Models
-Version: 0.2.5
-Date: 2026-02-08
+Version: 0.2.6
+Date: 2026-02-13
 Authors@R: c(
     person("Yunzhe", "Qian", email = "qyzanemos@gmail.com", role = c("aut", "cre")),
     person("Rachel", "Nethery", email = "rnethery@hsph.harvard.edu", role = "aut"),
@@ -14,11 +14,11 @@ Authors@R: c(
     )
 Description: Implements atom-based regression models (ABRM) for analyzing spatially 
     misaligned data. Provides functions for simulating misaligned spatial data, 
-    preparing NIMBLE model inputs, running MCMC diagnostics, and comparing different 
-    spatial analysis methods including dasymetric mapping. All main functions return
+    preparing NIMBLE model inputs, running MCMC diagnostics, and providing results. All main functions return
     S3 objects with print(), summary(), and plot() methods for intuitive result exploration.
-    Methods are described in Nethery et al. (2023) <doi:10.1101/2023.01.10.23284410>.
-    Further methodological details and software implementation are described in Qian et al. (in review).
+    Methods originally described in Mugglin et al. (2000) <doi:10.1080/01621459.2000.10474279>,
+    further investigated in Trevisani & Gelfand (2013), and applied in Nethery et al. (2023) 
+    <doi:10.1101/2023.01.10.23284410>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.0.0), nimble
@@ -30,7 +30,7 @@ URL: https://github.com/bellayqian/spatialAtomizeR
 BugReports: https://github.com/bellayqian/spatialAtomizeR/issues
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2026-02-09 03:27:58 UTC; anemos
+Packaged: 2026-02-13 20:30:52 UTC; anemos
 Author: Yunzhe Qian [aut, cre],
   Rachel Nethery [aut],
   Nancy Krieger [ctb] (Contributed to the project conceptualization and
@@ -39,4 +39,4 @@ Author: Yunzhe Qian [aut, cre],
     manuscript)
 Maintainer: Yunzhe Qian <qyzanemos@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-02-09 03:50:02 UTC
+Date/Publication: 2026-02-14 18:00:02 UTC

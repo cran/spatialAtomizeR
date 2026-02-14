@@ -129,7 +129,8 @@ abrm_results <- run_abrm(
   # MCMC parameters
   niter = 50000,    # Total iterations per chain
   nburnin = 30000,  # Burn-in iterations
-  nchains = 2       # Number of chains
+  nchains = 2,      # Number of chains
+  seed = 123
 )
 ```
 
@@ -149,6 +150,31 @@ summary(abrm_results)
 
 # Plot method shows MCMC diagnostics (if available)
 plot(abrm_results)
+```
+
+Access vairance-covariance matrices from the MCMC posterior sample
+
+```{r vcov}
+# Get variance-covariance matrices
+vcov_matrices <- vcov(abrm_results)
+
+# Print summary
+print(vcov_matrices)
+
+# Access specific matrices
+vcov_matrices$vcov_beta_x   # Variance-covariance for X-grid coefficients
+vcov_matrices$vcov_beta_y   # Variance-covariance for Y-grid coefficients
+vcov_matrices$vcov_beta_0   # Variance of intercept
+vcov_matrices$vcov_all      # Combined matrix for all parameters
+
+# Compute standard errors from diagonal
+sqrt(diag(vcov_matrices$vcov_beta_x))
+
+# Compute correlation matrix from covariance matrix
+cov2cor(vcov_matrices$vcov_beta_y)
+
+# Check if parameters are correlated
+vcov_matrices$vcov_beta_x[1, 2]  # Covariance between first two X coefficients
 ```
 
 Access specific results:
@@ -337,7 +363,8 @@ mcmc_results <- run_abrm(
   # MCMC settings (increase for real analysis)
   niter = 300000,
   nburnin = 200000,
-  nchains = 2
+  nchains = 2,
+  seed = 123
 )
 
 # View results
@@ -366,32 +393,6 @@ binom_idx_x = 3   # Third position
 | 2    | Poisson      | 'poisson'   | Count/rate data         |
 | 3    | Binomial     | 'binomial'  | Proportion/binary data  |
 
-# Method Comparison
-
-Compare ABRM with traditional dasymetric mapping:
-
-```{r comparison, eval = FALSE}
-comparison <- run_both_methods(
-  sim_data = sim_data,
-  sim_metadata = list(sim_number = 1, x_correlation = 0.5, y_correlation = 0.5),
-  model_code = model_code,
-  nimble_params = list(niter = 1000, nburnin = 500, thin = 2, nchains = 2),
-  output_dir = tempdir(),
-  norm_idx_x = c(1),
-  pois_idx_x = c(2),
-  binom_idx_x = c(3),
-  norm_idx_y = c(1),
-  pois_idx_y = c(2),
-  binom_idx_y = c(3),
-  dist_y = 2,
-  outcome_type = 'poisson'
-)
-
-# View comparison results
-print(comparison)
-summary(comparison)
-```
-
 # Troubleshooting
 
 ## Common Errors
@@ -404,11 +405,6 @@ summary(comparison)
 
 **Error: "gridx must contain an area ID variable named 'ID'"**
 - **Solution:** Ensure your spatial dataframes have a numeric column named `ID`
-
-## Warnings
-
-**Warning: "pop_atoms length doesn't match D!"**
-- Usually harmless. The model should still run correctly.
 
 # Key Parameters Reference
 
@@ -440,4 +436,4 @@ citation("spatialAtomizeR")
 ```
 
 **Reference:**
-Qian, Y., Johnson, N., Krieger, N., & Nethery, R.C. (2024). spatialAtomizeR: Atom-Based Regression Models for Spatially Misaligned Data in R. R package version 0.2.4.
+Qian, Y., Johnson, N., Krieger, N., & Nethery, R.C. (2026). spatialAtomizeR: Atom-Based Regression Models for Spatially Misaligned Data in R. R package version 0.2.6.

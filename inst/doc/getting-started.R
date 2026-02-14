@@ -76,7 +76,8 @@ knitr::opts_chunk$set(
 #   # MCMC parameters
 #   niter = 50000,    # Total iterations per chain
 #   nburnin = 30000,  # Burn-in iterations
-#   nchains = 2       # Number of chains
+#   nchains = 2,      # Number of chains
+#   seed = 123
 # )
 
 ## ----examine_results----------------------------------------------------------
@@ -91,6 +92,28 @@ knitr::opts_chunk$set(
 # 
 # # Plot method shows MCMC diagnostics (if available)
 # plot(abrm_results)
+
+## ----vcov---------------------------------------------------------------------
+# # Get variance-covariance matrices
+# vcov_matrices <- vcov(abrm_results)
+# 
+# # Print summary
+# print(vcov_matrices)
+# 
+# # Access specific matrices
+# vcov_matrices$vcov_beta_x   # Variance-covariance for X-grid coefficients
+# vcov_matrices$vcov_beta_y   # Variance-covariance for Y-grid coefficients
+# vcov_matrices$vcov_beta_0   # Variance of intercept
+# vcov_matrices$vcov_all      # Combined matrix for all parameters
+# 
+# # Compute standard errors from diagonal
+# sqrt(diag(vcov_matrices$vcov_beta_x))
+# 
+# # Compute correlation matrix from covariance matrix
+# cov2cor(vcov_matrices$vcov_beta_y)
+# 
+# # Check if parameters are correlated
+# vcov_matrices$vcov_beta_x[1, 2]  # Covariance between first two X coefficients
 
 ## ----access_results-----------------------------------------------------------
 # # Parameter estimates table
@@ -242,32 +265,12 @@ knitr::opts_chunk$set(
 #   # MCMC settings (increase for real analysis)
 #   niter = 300000,
 #   nburnin = 200000,
-#   nchains = 2
+#   nchains = 2,
+#   seed = 123
 # )
 # 
 # # View results
 # summary(mcmc_results)
-
-## ----comparison, eval = FALSE-------------------------------------------------
-# comparison <- run_both_methods(
-#   sim_data = sim_data,
-#   sim_metadata = list(sim_number = 1, x_correlation = 0.5, y_correlation = 0.5),
-#   model_code = model_code,
-#   nimble_params = list(niter = 1000, nburnin = 500, thin = 2, nchains = 2),
-#   output_dir = tempdir(),
-#   norm_idx_x = c(1),
-#   pois_idx_x = c(2),
-#   binom_idx_x = c(3),
-#   norm_idx_y = c(1),
-#   pois_idx_y = c(2),
-#   binom_idx_y = c(3),
-#   dist_y = 2,
-#   outcome_type = 'poisson'
-# )
-# 
-# # View comparison results
-# print(comparison)
-# summary(comparison)
 
 ## ----citation, eval = FALSE---------------------------------------------------
 # citation("spatialAtomizeR")
