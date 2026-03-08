@@ -23,8 +23,9 @@ run_abrm(
   thin = 10,
   seed = NULL,
   sim_metadata = NULL,
-  save_plots = TRUE,
-  output_dir = NULL
+  save_plots = FALSE,
+  output_dir = NULL,
+  compute_waic = FALSE
 )
 }
 \arguments{
@@ -62,15 +63,75 @@ run_abrm(
 
 \item{seed}{Integer seed for reproducibility. Each chain uses seed+(chain_number-1) (default: NULL)}
 
-\item{sim_metadata}{Optional simulation metadata list}
+\item{sim_metadata}{Optional named list of simulation metadata (e.g.,
+\code{sim_number}, \code{x_correlation}, \code{y_correlation}) passed
+through to \code{\link{run_nimble_model}} and used to label diagnostic
+plot file names when \code{save_plots = TRUE}. For non-simulation use,
+leave as \code{NULL}.}
 
-\item{save_plots}{Logical, whether to save diagnostic plots (default: TRUE)}
+\item{save_plots}{Logical, whether to save diagnostic plots (default: FALSE)}
 
 \item{output_dir}{Directory for saving outputs (default: NULL)}
+
+\item{compute_waic}{Logical; if \code{TRUE}, NIMBLE computes the Widely
+Applicable Information Criterion (WAIC) during MCMC sampling and stores it
+in the returned object. Retrieve it afterwards with \code{\link{waic}}.
+Default \code{FALSE}.}
 }
 \value{
-List containing MCMC results and parameter estimates
+An object of class \code{"abrm"}: a named list with components
+  \code{mcmc_results}, \code{parameter_estimates}, \code{all_parameters},
+  \code{fitted_values} (numeric vector of Y-grid-level predicted outcome
+  values on the original outcome scale),
+  \code{y_grid_ids} (integer vector of Y-grid cell IDs in model order), and
+  \code{y_observed} (numeric vector of observed outcome values for directly
+  observed Y-grid cells). Use \code{fitted()} to extract a formatted
+  comparison table of observed vs. fitted values, and \code{waic()} to
+  retrieve model fit criteria when \code{compute_waic = TRUE}.
 }
 \description{
-Runs the Atom-Based Regression Model on simulated data
+Fits an Atom-Based Regression Model (ABRM) to spatially misaligned data
+using Bayesian MCMC via NIMBLE. Works with both simulated and real-world data.
+}
+\examples{
+\donttest{
+  # Simulate misaligned spatial data with one normal covariate per grid
+  sim_data <- simulate_misaligned_data(
+    seed = 1,
+    dist_covariates_x = "normal",
+    dist_covariates_y = "normal",
+    dist_y = "normal",
+    x_intercepts = 0,
+    y_intercepts = 0,
+    beta0_y = 0,
+    beta_x = 0.1,
+    beta_y = -0.1
+  )
+
+  # Retrieve the pre-compiled NIMBLE model code
+  model_code <- get_abrm_model()
+
+  # Fit the ABRM (use small niter/nburnin for illustration only)
+  results <- run_abrm(
+    gridx      = sim_data$gridx,
+    gridy      = sim_data$gridy,
+    atoms      = sim_data$atoms,
+    model_code = model_code,
+    true_params = sim_data$true_params,
+    norm_idx_x = 1,
+    norm_idx_y = 1,
+    dist_y     = 1,
+    niter      = 1000,
+    nburnin    = 500,
+    nchains    = 2,
+    seed       = 1,
+    save_plots = FALSE
+  )
+
+  print(results)    # concise model summary
+  summary(results)  # full parameter table
+  plot(results)     # MCMC trace and density plots
+  vcov(results)     # posterior variance-covariance matrices
+}
+
 }

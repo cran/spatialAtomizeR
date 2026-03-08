@@ -4,21 +4,20 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 5,
-  eval = FALSE  # Set to TRUE to run code during build (requires external data for Example 2)
+  eval = TRUE
 )
 
-## ----install, eval = FALSE----------------------------------------------------
+## ----install, eval=FALSE------------------------------------------------------
 # # Install from CRAN
 # install.packages("spatialAtomizeR")
 # 
 # # Or install development version from GitHub
-# devtools::install_github("bellayqian/spatialAtomizeR")
+# # devtools::install_github("bellayqian/spatialAtomizeR")
 
-## ----libraries, message = FALSE-----------------------------------------------
-# library(spatialAtomizeR)
-# library(nimble)  # Required for ABRM models
+## ----libraries----------------------------------------------------------------
+library(spatialAtomizeR)
 
-## ----simulate-----------------------------------------------------------------
+## ----simulate_data_show, eval=FALSE-------------------------------------------
 # sim_data <- simulate_misaligned_data(
 #   seed = 42,
 # 
@@ -41,20 +40,29 @@ knitr::opts_chunk$set(
 #   beta_y = c(0.03, -0.1, 0.2)      # Effects of Y covariates
 # )
 
+## ----simulate_data_run, include=FALSE-----------------------------------------
+# Actually load the pre-computed version for vignette speed
+sim_data <- readRDS(
+  system.file("extdata", "sim_vignette_data.rds", package = "spatialAtomizeR")
+)
+
 ## ----examine_data-------------------------------------------------------------
-# # Check the class
-# class(sim_data)
-# 
-# # Print method shows basic information
-# print(sim_data)
-# 
-# # Summary method shows more details
-# summary(sim_data)
+# Check the class
+class(sim_data)
+
+# Print method shows basic information
+print(sim_data)
+
+# Summary method shows more details
+summary(sim_data)
+
+# Default: overlay both grids to visualise misalignment
+plot(sim_data)
 
 ## ----model--------------------------------------------------------------------
-# model_code <- get_abrm_model()
+model_code <- get_abrm_model()
 
-## ----run_abrm-----------------------------------------------------------------
+## ----run_abrm_show, eval=FALSE------------------------------------------------
 # abrm_results <- run_abrm(
 #   gridx = sim_data$gridx,
 #   gridy = sim_data$gridy,
@@ -77,88 +85,88 @@ knitr::opts_chunk$set(
 #   niter = 50000,    # Total iterations per chain
 #   nburnin = 30000,  # Burn-in iterations
 #   nchains = 2,      # Number of chains
-#   seed = 123
+#   seed = 123,
+#   compute_waic = TRUE
 # )
 
+## ----fit_model_run, include=FALSE---------------------------------------------
+abrm_results <- readRDS(
+  system.file("extdata", "abrm_vignette_results.rds", package = "spatialAtomizeR")
+)
+
 ## ----examine_results----------------------------------------------------------
-# # Check the class
-# class(abrm_results)
-# 
-# # Print method shows summary statistics
-# print(abrm_results)
-# 
-# # Summary method shows detailed parameter estimates
-# summary(abrm_results)
-# 
-# # Plot method shows MCMC diagnostics (if available)
-# plot(abrm_results)
+# Check the class
+class(abrm_results)
 
-## ----vcov---------------------------------------------------------------------
-# # Get variance-covariance matrices
-# vcov_matrices <- vcov(abrm_results)
-# 
-# # Print summary
-# print(vcov_matrices)
-# 
-# # Access specific matrices
-# vcov_matrices$vcov_beta_x   # Variance-covariance for X-grid coefficients
-# vcov_matrices$vcov_beta_y   # Variance-covariance for Y-grid coefficients
-# vcov_matrices$vcov_beta_0   # Variance of intercept
-# vcov_matrices$vcov_all      # Combined matrix for all parameters
-# 
-# # Compute standard errors from diagonal
-# sqrt(diag(vcov_matrices$vcov_beta_x))
-# 
-# # Compute correlation matrix from covariance matrix
-# cov2cor(vcov_matrices$vcov_beta_y)
-# 
-# # Check if parameters are correlated
-# vcov_matrices$vcov_beta_x[1, 2]  # Covariance between first two X coefficients
+# Print method shows summary statistics
+print(abrm_results)
 
-## ----access_results-----------------------------------------------------------
-# # Parameter estimates table
-# abrm_results$parameter_estimates
-# 
-# # MCMC convergence diagnostics
-# abrm_results$mcmc_results$convergence
-# 
-# # Full MCMC samples
-# # abrm_results$mcmc_results$samples
+# Summary method shows detailed parameter estimates
+summary(abrm_results)
+
+# Plot method shows MCMC diagnostics (if available)
+plot(abrm_results)
+
+## ----more_test----------------------------------------------------------------
+# Get variance-covariance matrices
+vcov(abrm_results)
+
+# Test coef()
+coef(abrm_results)
+
+# Test confint()
+confint(abrm_results)
+
+# Test parm subsetting
+confint(abrm_results, parm = "covariate_x_1")
+
+# Test fitted()
+fitted(abrm_results)
+
+# waic_abrm Objects
+w <- waic(abrm_results)
+print(w)          # shows WAIC, lppd, pWAIC, n_params
+w$waic            # the raw scalar if you need it for comparison
 
 ## ----load_spatial_packages, message = FALSE-----------------------------------
-# library(tigris)    # For US Census shapefiles
-# library(sf)        # Spatial features
-# library(sp)        # Spatial objects
-# library(spdep)     # Spatial dependence
-# library(raster)    # Spatial data manipulation
-# library(dplyr)     # Data manipulation
-# library(ggplot2)   # Plotting
+library(tigris)    # For US Census shapefiles
+library(sf)        # Spatial features
+library(sp)        # Spatial objects
+library(spdep)     # Spatial dependence
+library(raster)    # Spatial data manipulation
+library(dplyr)     # Data manipulation
+library(ggplot2)   # Plotting
 
 ## ----load_utah_data-----------------------------------------------------------
-# set.seed(500)
-# 
-# # Load Utah counties (Y-grid)
-# cnty <- counties(state = 'UT')
-# gridy <- cnty %>%
-#   rename(ID = GEOID) %>%
-#   mutate(ID = as.numeric(ID))  # ID must be numeric
-# 
-# # Load Utah school districts (X-grid)
-# scd <- school_districts(state = 'UT')
-# gridx <- scd %>%
-#   rename(ID = GEOID) %>%
-#   mutate(ID = as.numeric(ID))
+set.seed(500)
+
+# Load Utah counties (Y-grid)
+cnty <- counties(state = 'UT')
+gridy <- cnty %>%
+  rename(ID = GEOID) %>%
+  mutate(ID = as.numeric(ID))  # ID must be numeric
+
+# Load Utah school districts (X-grid)
+scd <- school_districts(state = 'UT')
+gridx <- scd %>%
+  rename(ID = GEOID) %>%
+  mutate(ID = as.numeric(ID))
 
 ## ----plot_misalignment, fig.width = 7, fig.height = 5-------------------------
-# ggplot() +
-#   geom_sf(data = gridx, fill = NA, color = "orange", linewidth = 1.2) +
-#   geom_sf(data = gridy, fill = NA, color = "blue",
-#           linetype = 'dashed', linewidth = 0.5) +
-#   labs(title = "Spatial Misalignment in Utah",
-#        subtitle = "Orange: School Districts | Blue: Counties") +
-#   theme_void()
+# Bundle grids into a misaligned_data object
+utah_mis <- structure(
+  list(gridy = gridy, gridx = gridx),
+  class = "misaligned_data"
+)
 
-## ----create_atoms-------------------------------------------------------------
+# Default overlay plot
+plot(utah_mis, color_x = "orange", color_y = "blue", title   = "Spatial Misalignment in Utah")
+
+# You can also inspect each grid separately
+plot(utah_mis, which = "gridy", title = "Utah Counties")
+plot(utah_mis, which = "gridx", title = "Utah School Districts")
+
+## ----create_atoms, eval = FALSE-----------------------------------------------
 # # Intersect the two grids to create atoms
 # atoms <- raster::intersect(as(gridy, 'Spatial'), as(gridx, 'Spatial'))
 # atoms <- sf::st_as_sf(atoms)
@@ -168,7 +176,7 @@ knitr::opts_chunk$set(
 #   rename(ID_y = ID_1,    # Y-grid (county) ID
 #          ID_x = ID_2)     # X-grid (school district) ID
 
-## ----load_population----------------------------------------------------------
+## ----load_population, eval = FALSE--------------------------------------------
 # # NOTE: You must download LandScan data separately
 # # Available at: https://landscan.ornl.gov/
 # # This example assumes the file is in your working directory
@@ -185,7 +193,7 @@ knitr::opts_chunk$set(
 # 
 # atoms$population <- pop_atoms
 
-## ----generate_synthetic_data--------------------------------------------------
+## ----generate_synthetic_data, eval = FALSE------------------------------------
 # # Create atom-level spatial adjacency matrix
 # W_a <- nb2mat(
 #   poly2nb(as(atoms, "Spatial"), queen = TRUE),
@@ -229,7 +237,7 @@ knitr::opts_chunk$set(
 #     )
 #   )
 
-## ----aggregate_data-----------------------------------------------------------
+## ----aggregate_data, eval = FALSE---------------------------------------------
 # # Aggregate X covariates to X-grid
 # gridx[["covariate_x_1"]] <- sapply(gridx$ID, function(j) {
 #   atom_indices <- which(atoms$ID_x == j)
@@ -248,7 +256,7 @@ knitr::opts_chunk$set(
 #   sum(atoms$y[atom_indices])
 # })
 
-## ----run_abrm_utah------------------------------------------------------------
+## ----run_abrm_utah, eval = FALSE----------------------------------------------
 # model_code <- get_abrm_model()
 # 
 # mcmc_results <- run_abrm(
@@ -266,11 +274,26 @@ knitr::opts_chunk$set(
 #   niter = 300000,
 #   nburnin = 200000,
 #   nchains = 2,
-#   seed = 123
+#   seed = 123,
+#   compute_waic = TRUE
 # )
-# 
-# # View results
+
+## ----more_test_real, eval=FALSE-----------------------------------------------
+# # View results from the Utah model fit
 # summary(mcmc_results)
+# 
+# # Get variance-covariance matrices
+# vcov(mcmc_results)
+# 
+# # Coefficient estimates
+# coef(mcmc_results)
+# 
+# # 95% confidence intervals
+# confint(mcmc_results)
+# 
+# # WAIC
+# w <- waic(mcmc_results)
+# print(w)
 
 ## ----citation, eval = FALSE---------------------------------------------------
 # citation("spatialAtomizeR")

@@ -25,7 +25,6 @@ devtools::install_github("bellayqian/spatialAtomizeR")
 
 ```r
 library(spatialAtomizeR)
-library(nimble)  # Required for ABRM models
 
 # 1. Simulate misaligned spatial data with full parameter specification
 sim_data <- simulate_misaligned_data(
@@ -209,7 +208,7 @@ This work was funded by the Robert Wood Johnson Foundation, Grant 81746. Project
 
 If you use this package, please cite:
 
-Qian Y, Nethery R, Krieger N, Johnson N (2026). spatialAtomizeR: Spatial Analysis with Misaligned Data Using Atom-Based Regression Models. R package version 0.2.6, https://github.com/bellayqian/spatialAtomizeR.
+Qian Y, Nethery R, Krieger N, Johnson N (2026). spatialAtomizeR: Spatial Analysis with Misaligned Data Using Atom-Based Regression Models. R package version 0.2.7, https://github.com/bellayqian/spatialAtomizeR.
 
 ## About
 
