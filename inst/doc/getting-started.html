@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yunzhe Qian (Bella), Principal Investigators: Dr. Nancy Krieger and Dr. Rachel Nethery" />
 
-<meta name="date" content="2026-03-08" />
+<meta name="date" content="2026-03-24" />
 
 <title>Getting Started with spatialAtomizeR</title>
 
@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Getting Started with spatialAtomizeR</h1>
 <h4 class="author">Yunzhe Qian (Bella), Principal Investigators:
 Dr. Nancy Krieger and Dr. Rachel Nethery</h4>
-<h4 class="date">2026-03-08</h4>
+<h4 class="date">2026-03-24</h4>
 
 
 
@@ -676,10 +676,12 @@ the analysis in the manuscript.</p>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>atoms <span class="ot">&lt;-</span> raster<span class="sc">::</span><span class="fu">intersect</span>(<span class="fu">as</span>(gridy, <span class="st">&#39;Spatial&#39;</span>), <span class="fu">as</span>(gridx, <span class="st">&#39;Spatial&#39;</span>))</span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>atoms <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(atoms)</span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># Rename ID variables to match expected names</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>atoms <span class="ot">&lt;-</span> atoms <span class="sc">%&gt;%</span></span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">ID_y =</span> ID_1,    <span class="co"># Y-grid (county) ID</span></span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>         <span class="at">ID_x =</span> ID_2)     <span class="co"># X-grid (school district) ID</span></span></code></pre></div>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># Rename ID variables — column names vary by sf version:</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co"># Note: raster::intersect() + sf::st_as_sf() produces &quot;ID&quot;/&quot;ID.1&quot; on older sf</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co"># and &quot;ID_1&quot;/&quot;ID_2&quot; on newer sf (&gt;= 1.0). This grep-based approach handles both.</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>id_cols <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;^ID&quot;</span>, <span class="fu">names</span>(atoms), <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="fu">names</span>(atoms)[<span class="fu">names</span>(atoms) <span class="sc">==</span> id_cols[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="st">&quot;ID_y&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="fu">names</span>(atoms)[<span class="fu">names</span>(atoms) <span class="sc">==</span> id_cols[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="st">&quot;ID_x&quot;</span></span></code></pre></div>
 </div>
 <div id="step-4-add-atom-level-population-counts" class="section level2">
 <h2>Step 4: Add Atom-Level Population Counts</h2>
